@@ -1,0 +1,11 @@
+version: '3'
+services:
+  fserv:
+    restart: always
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=fserv
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
