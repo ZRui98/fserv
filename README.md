@@ -3,9 +3,9 @@ simple little file server with file name shortening and jwt authentication token
 ## Installation
 edit env.sh to change postgres database url(or use the docker-compose file for testing)  
 go build  
-## run with:
+## Run with:
 . env.sh && ./fserv
-## todo:
+## Todo:
 - File viewing
 - Albums/grouping of files
 - Admin panel
