@@ -13,7 +13,7 @@ import (
 )
 
 func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/register.html")
+	t, _ := template.ParseFiles("templates/register.html", "templates/head.tmpl", "templates/navbar.tmpl")
 	t.Execute(w, nil)
 }
 

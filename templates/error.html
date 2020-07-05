@@ -1,0 +1,12 @@
+<html>
+	{{ template "head" . }}
+	<body>
+		{{ template "navbar" . }}
+		<div class="section">
+			<h1 class="red">
+				{{ .ErrorHeader }}
+			</h1>
+			<h3>{{ .ErrorMessage }}</h3>
+		</div>
+	</body>
+</html>

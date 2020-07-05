@@ -20,8 +20,11 @@ type Server struct {
 
 func New(c *config.Config) (*Server) {
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		t, _ := template.ParseFiles("templates/index.html")
+	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		t, err := template.ParseFiles("templates/index.html", "templates/head.tmpl", "templates/navbar.tmpl")
+		if err != nil {
+			glog.Errorf("Something went wrong parsing template :: %v\n", err)
+		}
 		t.Execute(w, nil)
 	})
 	pool := models.CreatePool(c.DB_URL) // use same pool, with different interfaces
@@ -34,6 +37,11 @@ func New(c *config.Config) (*Server) {
 		cr.Use(s.ValidateJwt)
 		cr.Get("/", s.UploadGet)
 		cr.Post("/", s.UploadPost)
+	})
+	r.Get("/404", s.E404)
+	r.Get("/500", s.E500)
+	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
+		http.Redirect(w, req, "/404", http.StatusSeeOther)
 	})
 	r.Get("/v/{fileId}", s.ViewFile)
 	fs := http.FileServer(http.Dir("./static/"))

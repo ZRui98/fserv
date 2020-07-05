@@ -14,6 +14,7 @@ type File struct {
 type FileRepository interface {
 	GetFileById(context.Context, string) (*File, error)
 	AddFile(context.Context, *File) (error)
+	GetFilesForUser(context.Context, *User) ([]File, error)
 }
 
 func (pool *DbPool) GetFileById(ctx context.Context, urlId string) (user *File, err error) {
@@ -27,4 +28,16 @@ func (pool *DbPool) AddFile(ctx context.Context, file *File) (err error) {
 	queryString := `INSERT INTO "files" (url_id, file_path, file_name, owner) VALUES ($1, $2, $3, $4);`
 	_, err = pool.db.Exec(ctx, queryString, file.UrlId, file.FilePath, file.FileName, file.Owner)
 	return err
+}
+
+func (pool *DbPool) GetFilesForUser(ctx context.Context, file *User) (files []File, err error) {
+	queryString := `SELECT "url_id", "file_path", "file_name", "owner" FROM "files" WHERE "owner"=$1;`
+	var res []File
+	rows, err := pool.db.Query(ctx, queryString, file.Username)
+	for rows.Next() {
+		f := File{}
+		rows.Scan(&f.UrlId, &f.FilePath, &f.FileName, &f.Owner)
+		res = append(res, f)
+	}
+	return res, err
 }

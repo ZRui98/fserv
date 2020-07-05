@@ -102,6 +102,6 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) UploadGet(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/upload.html")
+	t, _ := template.ParseFiles("templates/upload.html", "templates/head.tmpl", "templates/navbar.tmpl")
 	t.Execute(w, nil)
 }

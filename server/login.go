@@ -10,7 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func (server *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
+func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			glog.Errorf("Parsing form failed:: %v\n", err)
@@ -18,14 +18,16 @@ func (server *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		}
 		username := r.PostFormValue("username")
 		password := r.PostFormValue("password")
-		user, err := server.users.GetUserById(r.Context(), username)
+		user, err := s.users.GetUserById(r.Context(), username)
 		if err != nil {
 			glog.Errorf("Querying DB failed:: %v\n", err)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 		if err != nil {
 			glog.Errorf("Error validating password:: %v\n", err)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
@@ -35,7 +37,7 @@ func (server *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		loginTimestamp := time.Now()
-		err = server.users.UpdateUserLastLoginTime(r.Context(), username, loginTimestamp)
+		err = s.users.UpdateUserLastLoginTime(r.Context(), username, loginTimestamp)
 		expirationTime := time.Now().Add(3 * time.Hour)
 		claims := &Claims {
 			Username: username,
@@ -46,9 +48,11 @@ func (server *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(JWT_KEY)
+		tokenString, err := token.SignedString(s.Config.JWT_KEY)
 		if err != nil {
+			glog.Errorf("Error creating JWT:: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
+			http.Redirect(w, r, "/500", http.StatusSeeOther)
 			return
 		}
 
@@ -63,7 +67,8 @@ func (server *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (server *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/login.html")
+func (s *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("templates/login.html", "templates/head.tmpl", "templates/navbar.tmpl")
+	w.WriteHeader(http.StatusOK)
 	t.Execute(w, nil)
 }
