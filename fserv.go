@@ -4,6 +4,7 @@ import (
 	"os"
 	"flag"
 	"github.com/zrui98/fserv/server"
+	"github.com/zrui98/fserv/config"
 )
 
 func usage() {
@@ -18,6 +19,7 @@ func init() {
     flag.Parse()
 }
 func main() {
-	s := server.New()
+	c := config.LoadConfig()
+	s := server.New(c)
 	s.ListenAndServe()
 }

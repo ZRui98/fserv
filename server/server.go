@@ -1,9 +1,10 @@
 package server
 
 import (
-	"net/http"
 	"html/template"
-	
+	"net/http"
+
+	"github.com/zrui98/fserv/config"
 	"github.com/zrui98/fserv/models"
 
 	"github.com/go-chi/chi"
@@ -12,18 +13,19 @@ import (
 
 type Server struct {
 	router chi.Router
+	Config *config.Config
 	users models.UserRepository
 	files models.FileRepository
 }
 
-func New() (*Server) {
+func New(c *config.Config) (*Server) {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("templates/index.html")
 		t.Execute(w, nil)
 	})
-	pool := models.CreatePool() // use same pool, with different interfaces
-	s := &Server{ router: r, users: pool, files: pool }
+	pool := models.CreatePool(c.DB_URL) // use same pool, with different interfaces
+	s := &Server{ router: r, Config: c, users: pool, files: pool }
 	r.Get("/login", s.LoginGet)
 	r.Post("/login", s.LoginPost)
 	r.Get("/register", s.RegisterGet)
@@ -34,6 +36,8 @@ func New() (*Server) {
 		cr.Post("/", s.UploadPost)
 	})
 	r.Get("/v/{fileId}", s.ViewFile)
+	fs := http.FileServer(http.Dir("./static/"))
+	r.Handle("/static/*", http.StripPrefix("/static/", fs))
 	return s
 }
 

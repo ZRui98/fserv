@@ -12,14 +12,12 @@ import (
 	"github.com/golang/glog"
 )
 
-var REGISTRATION_KEY = os.Getenv("REGISTRATION_KEY")
-
-func (server *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("templates/register.html")
 	t.Execute(w, nil)
 }
 
-func (server *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		glog.Errorf("Parsing form failed:: %v\n", err)
@@ -29,7 +27,7 @@ func (server *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
 	registration_key := r.PostFormValue("key")
-	if (registration_key != REGISTRATION_KEY) {
+	if (registration_key != s.Config.REGISTRATION_KEY) {
 		glog.Error("Wrong Registration Key")
 		return
 	}
@@ -43,7 +41,7 @@ func (server *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 		Password: hashedPassword,
 		LastLoginTime: time.Now(),
 	}
-	err = server.users.AddUserById(r.Context(), user)
+	err = s.users.AddUserById(r.Context(), user)
 	if err != nil {
 		glog.Errorf("Querying DB failed:: %v\n", err)
 		return

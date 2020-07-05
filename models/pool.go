@@ -12,8 +12,8 @@ type DbPool struct {
 	db *pgxpool.Pool
 }
 
-func CreatePool() *DbPool {
-	poolConfig, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
+func CreatePool(dbUrl string) *DbPool {
+	poolConfig, err := pgxpool.ParseConfig(dbUrl)
 	if err != nil {
 		glog.Fatalf("Error in DB Configuration:: %v\n", err)
 		os.Exit(1)

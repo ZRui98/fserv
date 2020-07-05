@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"context"
-	"os"
 	"time"
 
 	"github.com/zrui98/fserv/models"
@@ -12,7 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var JWT_KEY = []byte(os.Getenv("SECRET_KEY"))
 type Claims struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
@@ -32,7 +30,7 @@ func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 		claims := &Claims{}
 		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 			http.Redirect(w, r, "/login", 301)
-			return JWT_KEY, nil
+			return s.Config.JWT_KEY, nil
 		})
 		if err != nil {
 			http.Redirect(w, r, "/login", 301)

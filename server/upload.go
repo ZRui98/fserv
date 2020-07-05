@@ -20,8 +20,6 @@ const (
 	length = uint32(len(alphabet))
 )
 
-var ROOT_DIR = os.Getenv("FILE_DIR")
-
 func generateRandomBytes(n int) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
@@ -46,7 +44,7 @@ func encode(n uint32) string {
 	return string(b)
 }
 
-func (server *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 	glog.Info("Uploading File")
 	r.ParseMultipartForm(32 << 20)
 	uploadedFile, handler, err := r.FormFile("uploadFile")
@@ -74,7 +72,7 @@ func (server *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		folder = "videos"
 	}
 	token := encode(binary.BigEndian.Uint32(seed))
-	file_path := path.Join(ROOT_DIR, "files", r.Context().Value(UsernameKey).(string), folder, token + path.Ext(handler.Filename))
+	file_path := path.Join(s.Config.ROOT_DIR, "files", r.Context().Value(UsernameKey).(string), folder, token + path.Ext(handler.Filename))
 	glog.Infof("Saving to: %s File: %s\n", file_path, handler.Filename)
 	file := &models.File{
 		UrlId: token,
@@ -82,7 +80,7 @@ func (server *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		FileName: handler.Filename,
 		Owner: r.Context().Value(UsernameKey).(string),
 	}
-	err = server.files.AddFile(r.Context(), file)
+	err = s.files.AddFile(r.Context(), file)
 	if err != nil {
 		glog.Errorf("Error inserting data into DB: %v\n", err)
 		return
@@ -103,7 +101,7 @@ func (server *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-func (server *Server) UploadGet(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UploadGet(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("templates/upload.html")
 	t.Execute(w, nil)
 }
