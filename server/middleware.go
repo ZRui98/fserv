@@ -23,20 +23,22 @@ func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		c, err := r.Cookie("token")
 		if err != nil {
+			glog.Errorf("Error with cookie: %v\n", err)
 			http.Redirect(w, r, "/login", 301)
 			return
 		}
 		tknStr := c.Value
 		claims := &Claims{}
 		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-			http.Redirect(w, r, "/login", 301)
 			return s.Config.JWT_KEY, nil
 		})
 		if err != nil {
+			glog.Errorf("Error with token: %v\n", err)
 			http.Redirect(w, r, "/login", 301)
 			return
 		}
 		if !tkn.Valid {
+			glog.Error("Token was invalid!")
 			http.Redirect(w, r, "/login", 301)
 			return
 		}
@@ -54,6 +56,7 @@ func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 		}
 		username := userWithName.Username
 		if username == "" {
+			glog.Error("Error getting username")
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}

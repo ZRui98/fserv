@@ -33,10 +33,10 @@ func New(c *config.Config) (*Server) {
 	r.Post("/login", s.LoginPost)
 	r.Get("/register", s.RegisterGet)
 	r.Post("/register", s.RegisterPost)
-	r.Route("/upload", func(cr chi.Router) {
-		cr.Use(s.ValidateJwt)
-		cr.Get("/", s.UploadGet)
-		cr.Post("/", s.UploadPost)
+	r.Group(func(gr chi.Router) {
+		gr.Use(s.ValidateJwt)
+		gr.Get("/upload", s.UploadGet)
+		gr.Post("/upload", s.UploadPost)
 	})
 	r.Get("/404", s.E404)
 	r.Get("/500", s.E500)

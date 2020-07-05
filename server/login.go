@@ -34,6 +34,7 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		if !match {
 			w.WriteHeader(http.StatusUnauthorized)
 			glog.Error("Password did not match")
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		loginTimestamp := time.Now()
@@ -69,6 +70,5 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("templates/login.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	w.WriteHeader(http.StatusOK)
 	t.Execute(w, nil)
 }
