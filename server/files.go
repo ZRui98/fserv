@@ -1,5 +1,9 @@
 package server
 
-func (s *Server) FilesGet() {
+import (
+	"net/http"
+)
+
+func (s *Server) FilesGet(w http.ResponseWriter, r *http.Request) {
 	
 }

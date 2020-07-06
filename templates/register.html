@@ -5,8 +5,14 @@
 		<div class="section">
 			<form method="post" action="/register">
 				<label><input type="text" id="username" name="username" placeholder="Username"></label>
+				{{ with .Username }}
+				<div class="error">{{ . }}</div><br>
+				{{ end }}
 				<label><input type="password" id="password" name="password" placeholder="Password"></label>
 				<label><input type="key" id="key" name="key" placeholder="Registration Key"></label>
+				{{ with .RegistrationKey }}
+				<div class="error">{{ . }}</div><br>
+				{{ end }}
 				<button type="submit" class="bgreen">Register</button>
 			</form>
 		</div>

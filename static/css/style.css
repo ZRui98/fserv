@@ -17,11 +17,10 @@ html{
     font-size:16px
 }
 .section{
-    /* min-width:calc(100% - calc(var(--margin-body) * 2)); */
-    /* padding-left:var(--margin-body); */
-    /* padding-right:var(--margin-body); */
     padding-top:80px;
-    /* height:calc(100% - 80px); */
+	display:flex;
+	justify-content:center;
+	align-items:center;
     color:var(--main-fg-color);
     background-color:var(--main-bg-color);
 	text-align:center;
@@ -48,6 +47,11 @@ a:hover{
 .green{
 	color:var(--main-green-color);
 }
+.error{
+	background:var(--main-red-color);
+	color:var(--main-fg-color);
+	padding: 5px;
+}
 .red{
 	color:var(--main-red-color);
 }
@@ -57,6 +61,9 @@ a:hover{
 label{
     display:block;
     margin-bottom:20px;
+}
+form input, form.error {
+	width: 250px;
 }
 input{
 	color:var(--main-fg-color);

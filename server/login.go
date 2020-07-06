@@ -10,10 +10,16 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+type LoginErrors struct {
+	Username string
+	Password string
+}
+
 func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			glog.Errorf("Parsing form failed:: %v\n", err)
+			http.Redirect(w, r, "/500", http.StatusSeeOther)
 			return
 		}
 		username := r.PostFormValue("username")
@@ -21,20 +27,26 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		user, err := s.users.GetUserById(r.Context(), username)
 		if err != nil {
 			glog.Errorf("Querying DB failed:: %v\n", err)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			renderLogin(w, &LoginErrors{
+				Username: "Invalid Username",
+			})
 			return
 		}
 		match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 		if err != nil {
 			glog.Errorf("Error validating password:: %v\n", err)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			renderLogin(w, &LoginErrors{
+				Password: "Invalid Password",
+			})
 			return
 		}
 
 		if !match {
 			w.WriteHeader(http.StatusUnauthorized)
 			glog.Error("Password did not match")
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			renderLogin(w, &LoginErrors{
+				Password: "Invalid Password",
+			})
 			return
 		}
 		loginTimestamp := time.Now()
@@ -69,6 +81,10 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
+	renderLogin(w, &LoginErrors{})
+}
+
+func renderLogin(w http.ResponseWriter, v *LoginErrors) {
 	t, _ := template.ParseFiles("templates/login.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, nil)
+	t.Execute(w, v)
 }

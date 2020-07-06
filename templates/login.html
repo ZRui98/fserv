@@ -10,9 +10,15 @@
 				<label>
 					<input type="text" id="username" name="username" placeholder="Username">
 				</label>
+				{{ with .Username }}
+				<div class="error">{{ . }}</div><br>
+				{{ end }}
 				<label>
 					<input type="password" id="password" name="password" placeholder="Password">
 				</label>
+				{{ with .Password }}
+				<div class="error">{{ . }}</div><br>
+				{{ end }}
 				<button class="bgreen" type="submit">Login</button>
 			</form>
 		</div>

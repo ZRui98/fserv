@@ -12,9 +12,10 @@ import (
 	"github.com/golang/glog"
 )
 
-func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/register.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, nil)
+type RegistrationErrors struct {
+	Username string
+	Password string
+	RegistrationKey string
 }
 
 func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
@@ -29,11 +30,15 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	registration_key := r.PostFormValue("key")
 	if (registration_key != s.Config.REGISTRATION_KEY) {
 		glog.Error("Wrong Registration Key")
+		renderRegistration(w, &RegistrationErrors{
+			RegistrationKey: "Invalid Registration Key",
+		})
 		return
 	}
 	hashedPassword, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		glog.Errorf("Failed to verify password:: %v\n", err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	user := &models.User{
@@ -44,6 +49,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	err = s.users.AddUserById(r.Context(), user)
 	if err != nil {
 		glog.Errorf("Querying DB failed:: %v\n", err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	userDir := "files/" + username
@@ -54,5 +60,14 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
+	renderRegistration(w, &RegistrationErrors{})
+}
+
+func renderRegistration(w http.ResponseWriter, v *RegistrationErrors) {
+	t, _ := template.ParseFiles("templates/register.html", "templates/head.tmpl", "templates/navbar.tmpl")
+	t.Execute(w, v)
 }
 
