@@ -21,5 +21,6 @@ func init() {
 func main() {
 	c := config.LoadConfig()
 	s := server.New(c)
+	s.SetupRoutes()
 	s.ListenAndServe()
 }

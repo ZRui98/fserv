@@ -21,10 +21,10 @@ var UsernameKey ContextKey = "usernameKey"
 
 func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		c, err := r.Cookie("token")
+		c, err := r.Cookie("jwtsecret")
 		if err != nil {
 			glog.Errorf("Error with cookie: %v\n", err)
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		tknStr := c.Value
@@ -34,24 +34,24 @@ func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 		})
 		if err != nil {
 			glog.Errorf("Error with token: %v\n", err)
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		if !tkn.Valid {
 			glog.Error("Token was invalid!")
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		var userWithName *models.User
 		userWithName, err = s.users.GetUserById(r.Context(), claims.Username)
 		if err != nil {
 			glog.Errorf("Getting last login time failed: %v\n", err)
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-		if time.Unix(claims.IssuedAt, 0).Before(userWithName.LastLoginTime) {
+		if userWithName.LastLoginTime.After(time.Unix(claims.IssuedAt, 0)) {
 			glog.Error("User already logged in, token expired")
-			http.Redirect(w, r, "/login", 301)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 		username := userWithName.Username

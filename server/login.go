@@ -42,14 +42,13 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if !match {
-			w.WriteHeader(http.StatusUnauthorized)
 			glog.Error("Password did not match")
 			renderLogin(w, &LoginErrors{
 				Password: "Invalid Password",
 			})
 			return
 		}
-		loginTimestamp := time.Now()
+		loginTimestamp := time.Now().Add(-1*time.Second)
 		err = s.users.UpdateUserLastLoginTime(r.Context(), username, loginTimestamp)
 		expirationTime := time.Now().Add(3 * time.Hour)
 		claims := &Claims {
@@ -64,17 +63,17 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		tokenString, err := token.SignedString(s.Config.JWT_KEY)
 		if err != nil {
 			glog.Errorf("Error creating JWT:: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
 			http.Redirect(w, r, "/500", http.StatusSeeOther)
 			return
 		}
 
 		http.SetCookie(w, &http.Cookie{
-			Name: "token",
+			Name: "jwtsecret",
 			Value: tokenString,
 			Expires: expirationTime,
-			Secure: true,
 			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+			Path: "/",
 		})
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
