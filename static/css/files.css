@@ -22,8 +22,9 @@
 	padding:0;
 	color:var(--main-fg-color);
 }
-.file a:hover{
-	color:var(--main-orange-color);
+.file a.filename:hover{
+	color:#4c4846;
+	text-decoration:underline;
 }
 .file a.delete:hover{
 	color:var(--main-red-color)!important;
