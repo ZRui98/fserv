@@ -3,7 +3,6 @@ package server
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -97,11 +96,9 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.Copy(f, uploadedFile)
-	t, _ := template.ParseFiles("templates/upload.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, nil)
+	renderPage(w, "templates/upload.html", nil)
 }
 
 func (s *Server) UploadGet(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/upload.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, nil)
+	renderPage(w, "templates/upload.html", nil)
 }

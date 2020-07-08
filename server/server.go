@@ -36,12 +36,14 @@ func (s *Server) SetupRoutes() {
 		})
 		r.Get("/login", s.LoginGet)
 		r.Post("/login", s.LoginPost)
+		r.Get("/logout", s.LogoutPost)
 		r.Get("/register", s.RegisterGet)
 		r.Post("/register", s.RegisterPost)
 		r.Group(func(r chi.Router) {
 			r.Use(s.ValidateJwt)
 			r.Get("/upload", s.UploadGet)
 			r.Post("/upload", s.UploadPost)
+			r.Get("/files", s.FilesGet)
 		})
 		r.Get("/404", s.E404)
 		r.Get("/500", s.E500)
@@ -56,4 +58,9 @@ func (s *Server) SetupRoutes() {
 
 func (server *Server) ListenAndServe() {
 	glog.Fatal(http.ListenAndServe(":2446", server.router))
+}
+
+func renderPage(w http.ResponseWriter, templateName string, v interface{}) {
+	t, _ := template.ParseFiles(templateName, "templates/head.tmpl", "templates/navbar.tmpl")
+	t.Execute(w, &v)
 }

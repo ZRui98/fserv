@@ -4,7 +4,6 @@ import (
 	"os"
 	"net/http"
 	"time"
-	"html/template"
 	
 	"github.com/zrui98/fserv/models"
 	"github.com/zrui98/fserv/constants"
@@ -30,7 +29,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	registration_key := r.PostFormValue("key")
 	if (registration_key != s.Config.REGISTRATION_KEY) {
 		glog.Error("Wrong Registration Key")
-		renderRegistration(w, &RegistrationErrors{
+		renderPage(w, "templates/register.html", &RegistrationErrors{
 			RegistrationKey: "Invalid Registration Key",
 		})
 		return
@@ -63,11 +62,5 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
-	renderRegistration(w, &RegistrationErrors{})
+	renderPage(w, "templates/register.html", &RegistrationErrors{})
 }
-
-func renderRegistration(w http.ResponseWriter, v *RegistrationErrors) {
-	t, _ := template.ParseFiles("templates/register.html", "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, v)
-}
-

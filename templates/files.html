@@ -1,0 +1,19 @@
+<html>
+	{{ template "head" . }}
+	<body>
+		{{ template "navbar" . }}
+		<head>
+			<link href="/static/css/files.css" rel="stylesheet"> 
+		</head>
+		<div class="section">
+			<div class="files">
+				{{ range .UserFiles }}
+				<div class="file">
+					<a class="filename"href="/v/{{ .UrlId }}">{{ .FileName }}</a>
+					<a class="delete" href="/delete/{{ .UrlId }}">&#91;x&#93;</a>
+				</div>
+				{{ end }}
+			</div>
+		</div>
+	</body>
+</html>

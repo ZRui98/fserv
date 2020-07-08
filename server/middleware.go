@@ -21,7 +21,7 @@ var UsernameKey ContextKey = "usernameKey"
 
 func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		c, err := r.Cookie("jwtsecret")
+		c, err := r.Cookie("jwtAccessToken")
 		if err != nil {
 			glog.Errorf("Error with cookie: %v\n", err)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
