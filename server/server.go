@@ -36,7 +36,6 @@ func (s *Server) SetupRoutes() {
 		})
 		r.Get("/login", s.LoginGet)
 		r.Post("/login", s.LoginPost)
-		r.Get("/logout", s.LogoutPost)
 		r.Get("/register", s.RegisterGet)
 		r.Post("/register", s.RegisterPost)
 		r.Group(func(r chi.Router) {

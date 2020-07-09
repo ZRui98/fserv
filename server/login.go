@@ -80,14 +80,6 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) LogoutPost(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name: "jwtAccessToken",
-		MaxAge: -1,
-	})
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
 func (s *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
 	renderPage(w, "templates/login.html", LoginErrors{})
 }
