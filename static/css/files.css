@@ -26,19 +26,32 @@
 	color:#4c4846;
 	text-decoration:underline;
 }
-.file a.delete:hover{
+.file button.delete:hover{
 	color:var(--main-red-color)!important;
 }
-.file:hover a.delete{
+.file:hover button.delete{
 	color:var(--main-bg-color);
 	visibility:visible;
 	opacity:1;
 	transition: visibility 0s linear 0s, opacity 300ms;
 }
-.file a.delete{
+.file .inline{
+	display:inline;
+	float:right;
+	width:0px;
+	margin: 0px;
+	padding: 0px;
+}
+.file button.delete{
     color:var(--main-yellow-color);
 	visibility:hidden;
 	opacity:0;
 	transition: visibility 0s linear 0s, opacity 300ms;
 	float:right;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 1em;
+	padding: 0px!important;
+	margin: 0px;
 }

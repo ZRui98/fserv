@@ -15,6 +15,7 @@ type FileRepository interface {
 	GetFileById(context.Context, string) (*File, error)
 	AddFile(context.Context, *File) (error)
 	GetFilesForUser(context.Context, string) ([]File, error)
+	DeleteFileById(context.Context, string) (error)
 }
 
 func (pool *DbPool) GetFileById(ctx context.Context, urlId string) (user *File, err error) {
@@ -40,4 +41,10 @@ func (pool *DbPool) GetFilesForUser(ctx context.Context, username string) (files
 		res = append(res, f)
 	}
 	return res, err
+}
+
+func (pool *DbPool) DeleteFileById(ctx context.Context, fid string) (err error) {
+	queryString := `DELETE FROM "files" WHERE "url_id"=$1;`
+	_, err = pool.db.Exec(ctx, queryString, fid)
+	return err
 }

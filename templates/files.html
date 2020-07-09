@@ -10,7 +10,11 @@
 				{{ range .UserFiles }}
 				<div class="file">
 					<a class="filename"href="/v/{{ .UrlId }}">{{ .FileName }}</a>
-					<a class="delete" href="/delete/{{ .UrlId }}">&#91;x&#93;</a>
+					<form method="post" action="/delete" class="inline">
+						<button type="submit" name="fileId" value="{{ .UrlId }}" class="delete">
+						&#91;x&#93;
+					  </button>
+					</form>
 				</div>
 				{{ end }}
 			</div>
