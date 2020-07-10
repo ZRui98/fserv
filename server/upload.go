@@ -71,7 +71,7 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		folder = "videos"
 	}
 	token := encode(binary.BigEndian.Uint32(seed))
-	file_path := path.Join(s.Config.ROOT_DIR, "files", r.Context().Value(UsernameKey).(string), folder, token + path.Ext(handler.Filename))
+	file_path := path.Join(s.Config.ROOT_DIR, r.Context().Value(UsernameKey).(string), folder, token + path.Ext(handler.Filename))
 	glog.Infof("Saving to: %s File: %s\n", file_path, handler.Filename)
 	file := &models.File{
 		UrlId: token,

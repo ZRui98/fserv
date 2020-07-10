@@ -4,6 +4,7 @@ import (
 	"os"
 	"net/http"
 	"time"
+	"path"
 	
 	"github.com/zrui98/fserv/models"
 	"github.com/zrui98/fserv/constants"
@@ -25,6 +26,21 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	}
 	glog.Info("Creating User")
 	username := r.PostFormValue("username")
+	if len(username) < 3 {
+		glog.Errorf("Username Too Short!")
+		renderPage(w, "templates/register.html", &RegistrationErrors{
+			Username: "Username too short",
+		})
+		return
+	}
+	userExists, _ := s.users.GetUserById(r.Context(), username)
+	if len(userExists.Username) > 0 {
+		glog.Errorf("Failed to claim unique username:: %v\n", userExists.Username)
+		renderPage(w, "templates/register.html", &RegistrationErrors{
+			Username: "Invalid Username (taken or bad form)",
+		})
+		return
+	}
 	password := r.PostFormValue("password")
 	registration_key := r.PostFormValue("key")
 	if (registration_key != s.Config.REGISTRATION_KEY) {
@@ -45,19 +61,29 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 		Password: hashedPassword,
 		LastLoginTime: time.Now(),
 	}
-	err = s.users.AddUserById(r.Context(), user)
 	if err != nil {
 		glog.Errorf("Querying DB failed:: %v\n", err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
-	userDir := "files/" + username
+	userDir := path.Join(s.Config.ROOT_DIR, username)
 	if _, err := os.Stat(userDir); os.IsNotExist(err) {
-		os.Mkdir(userDir, os.ModePerm)
-		for _, s := range constants.UserFolders {
-			os.Mkdir(userDir + "/" + s, os.ModePerm)
+		err = os.Mkdir(userDir, os.ModePerm)
+		if err != nil {
+			glog.Errorf("Failed to make user dir:: %v\n", err)
+			http.Redirect(w, r, "/500", http.StatusSeeOther)
+			return
+		}
+		for _, p := range constants.UserFolders {
+			err = os.Mkdir(userDir + "/" + p, os.ModePerm)
+			if err != nil {
+				glog.Errorf("Failed to make directory:: %v\n", err)
+				http.Redirect(w, r, "/500", http.StatusSeeOther)
+				return
+			}
 		}
 	}
+	err = s.users.AddUserById(r.Context(), user)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
