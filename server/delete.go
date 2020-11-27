@@ -10,7 +10,7 @@ import (
 func (s *Server) FileDelete(w http.ResponseWriter, r *http.Request) {
 	urlId := r.PostFormValue("fileId")
 	glog.Info("Deleting File")
-	file, err := s.files.GetFileById(r.Context(),  urlId)
+	file, err := s.files.GetFileById(r.Context(), urlId)
 	if err != nil {
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
@@ -19,7 +19,7 @@ func (s *Server) FileDelete(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/400", http.StatusSeeOther)
 		return
 	}
-	err = s.files.DeleteFileById(r.Context(),  urlId)
+	err = s.files.DeleteFileById(r.Context(), urlId)
 	if err != nil {
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return

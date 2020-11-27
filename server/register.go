@@ -1,20 +1,20 @@
 package server
 
 import (
-	"os"
 	"net/http"
-	"time"
+	"os"
 	"path"
-	
-	"github.com/zrui98/fserv/models"
-	"github.com/zrui98/fserv/constants"
+	"time"
+
 	"github.com/alexedwards/argon2id"
 	"github.com/golang/glog"
+	"github.com/zrui98/fserv/constants"
+	"github.com/zrui98/fserv/models"
 )
 
 type RegistrationErrors struct {
-	Username string
-	Password string
+	Username        string
+	Password        string
 	RegistrationKey string
 }
 
@@ -43,7 +43,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	}
 	password := r.PostFormValue("password")
 	registration_key := r.PostFormValue("key")
-	if (registration_key != s.Config.REGISTRATION_KEY) {
+	if registration_key != s.Config.REGISTRATION_KEY {
 		glog.Error("Wrong Registration Key")
 		renderPage(w, "templates/register.html", &RegistrationErrors{
 			RegistrationKey: "Invalid Registration Key",
@@ -57,8 +57,8 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &models.User{
-		Username: username,
-		Password: hashedPassword,
+		Username:      username,
+		Password:      hashedPassword,
 		LastLoginTime: time.Now(),
 	}
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range constants.UserFolders {
-			err = os.Mkdir(userDir + "/" + p, os.ModePerm)
+			err = os.Mkdir(userDir+"/"+p, os.ModePerm)
 			if err != nil {
 				glog.Errorf("Failed to make directory:: %v\n", err)
 				http.Redirect(w, r, "/500", http.StatusSeeOther)

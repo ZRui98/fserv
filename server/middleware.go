@@ -1,14 +1,14 @@
 package server
 
 import (
-	"net/http"
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/zrui98/fserv/models"
 
-	"github.com/golang/glog"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/golang/glog"
 )
 
 type Claims struct {
@@ -17,10 +17,11 @@ type Claims struct {
 }
 
 type ContextKey string
+
 var UsernameKey ContextKey = "usernameKey"
 
 func (s *Server) ValidateJwt(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie("jwtAccessToken")
 		if err != nil {
 			glog.Errorf("Error with cookie: %v\n", err)
@@ -64,4 +65,3 @@ func (s *Server) ValidateJwt(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-

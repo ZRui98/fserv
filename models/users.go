@@ -6,15 +6,15 @@ import (
 )
 
 type User struct {
-	Username string
-	Password string
+	Username      string
+	Password      string
 	LastLoginTime time.Time
 }
 
 type UserRepository interface {
 	GetUserById(context.Context, string) (*User, error)
-	AddUserById(context.Context, *User) (error)
-	UpdateUserLastLoginTime(context.Context, string, time.Time) (error)
+	AddUserById(context.Context, *User) error
+	UpdateUserLastLoginTime(context.Context, string, time.Time) error
 }
 
 func (pool *DbPool) GetUserById(ctx context.Context, username string) (user *User, err error) {

@@ -1,3 +1,7 @@
 package constants
 
-var UserFolders = []string{"txt", "videos", "images"}
+var UserFolders = []string{
+	"txt",
+	"videos",
+	"images",
+}

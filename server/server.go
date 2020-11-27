@@ -14,14 +14,14 @@ import (
 type Server struct {
 	router chi.Router
 	Config *config.Config
-	users models.UserRepository
-	files models.FileRepository
+	users  models.UserRepository
+	files  models.FileRepository
 }
 
-func New(c *config.Config) (*Server) {
+func New(c *config.Config) *Server {
 	r := chi.NewRouter()
 	pool := models.CreatePool(c.DB_URL) // use same pool, with different interfaces
-	s := &Server{ router: r, Config: c, users: pool, files: pool }
+	s := &Server{router: r, Config: c, users: pool, files: pool}
 	return s
 }
 

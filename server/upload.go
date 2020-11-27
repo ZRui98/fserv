@@ -16,7 +16,7 @@ import (
 
 const (
 	alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	length = uint32(len(alphabet))
+	length   = uint32(len(alphabet))
 )
 
 func generateRandomBytes(n int) ([]byte, error) {
@@ -71,13 +71,18 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		folder = "videos"
 	}
 	token := encode(binary.BigEndian.Uint32(seed))
-	file_path := path.Join(s.Config.ROOT_DIR, r.Context().Value(UsernameKey).(string), folder, token + path.Ext(handler.Filename))
+	file_path := path.Join(
+		s.Config.ROOT_DIR,
+		r.Context().Value(UsernameKey).(string),
+		folder,
+		token+path.Ext(handler.Filename),
+	)
 	glog.Infof("Saving to: %s File: %s\n", file_path, handler.Filename)
 	file := &models.File{
-		UrlId: token,
+		UrlId:    token,
 		FilePath: file_path,
 		FileName: handler.Filename,
-		Owner: r.Context().Value(UsernameKey).(string),
+		Owner:    r.Context().Value(UsernameKey).(string),
 	}
 	err = s.files.AddFile(r.Context(), file)
 	if err != nil {

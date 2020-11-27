@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/golang/glog"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type DbPool struct {
