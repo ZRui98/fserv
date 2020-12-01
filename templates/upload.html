@@ -1,6 +1,9 @@
 <html>
 	{{ template "head" . }}
 	<body>
+		<head>
+			<link href="/static/css/upload.css" rel="stylesheet"> 
+		</head>
 		{{ template "navbar" . }}
 		<div class="section">
 			<form
@@ -8,6 +11,14 @@
 				action="/upload"
 				method="post"
 			>
+				<div class="section" id="private">
+					Private? 
+					<input type="radio" id="yes" name="private" value="true" checked>
+					<label for="yes">Yes</label>
+					<input type="radio" id="no" name="private" value="false">
+					<label for="no">No</label>
+				</div>
+
 				<input type="file" name="uploadFile" />
 				<button class="bgreen" type="submit">Upload</button>
 			</form>

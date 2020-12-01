@@ -15,8 +15,17 @@ func (server *Server) ViewFile(w http.ResponseWriter, r *http.Request) {
 		glog.Errorf("Failed to fetch files:: %v\n", err)
 		http.Redirect(w, r, "/404", http.StatusSeeOther)
 	}
-	if file.IsPrivate {
+	c, err := r.Cookie("jwtAccessToken")
+	if err != nil {
+		glog.Errorf("Error with cookie:: %v\n", err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
+		return
+	}
+	username := server.GetValidJWTUsername(c, r.Context())
+	if file.IsPrivate && username != file.Owner {
+		glog.Error("Tried to access private file!")
 		http.Redirect(w, r, "/400", http.StatusSeeOther)
+		return
 	}
 	http.ServeFile(w, r, file.FilePath)
 }

@@ -58,7 +58,7 @@ a:hover{
 .orange{
 	color:var(--main-orange-color);
 }
-label{
+.input-wrapper{
     display:block;
     margin-bottom:20px;
 }

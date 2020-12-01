@@ -7,15 +7,15 @@
 		{{ template "navbar" . }}
 		<div class="section">
 			<form method="post" action="/login">
-				<label>
+				<div class="input-wrapper">
 					<input type="text" id="username" name="username" placeholder="Username">
-				</label>
+				</div>
 				{{ with .Username }}
 				<div class="error">{{ . }}</div><br>
 				{{ end }}
-				<label>
+				<div class="input-wrapper">
 					<input type="password" id="password" name="password" placeholder="Password">
-				</label>
+				</div>
 				{{ with .Password }}
 				<div class="error">{{ . }}</div><br>
 				{{ end }}

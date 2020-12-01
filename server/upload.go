@@ -46,6 +46,7 @@ func encode(n uint32) string {
 func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 	glog.Info("Uploading File")
 	r.ParseMultipartForm(32 << 20)
+	isPrivate := r.FormValue("private") == "true"
 	uploadedFile, handler, err := r.FormFile("uploadFile")
 	if err != nil {
 		glog.Errorf("Error parsing form file:: %v\n", err)
@@ -79,10 +80,11 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 	)
 	glog.Infof("Saving to: %s File: %s\n", file_path, handler.Filename)
 	file := &models.File{
-		UrlId:    token,
-		FilePath: file_path,
-		FileName: handler.Filename,
-		Owner:    r.Context().Value(UsernameKey).(string),
+		UrlId:     token,
+		FilePath:  file_path,
+		FileName:  handler.Filename,
+		Owner:     r.Context().Value(UsernameKey).(string),
+		IsPrivate: isPrivate,
 	}
 	err = s.files.AddFile(r.Context(), file)
 	if err != nil {

@@ -45,7 +45,7 @@ func (s *Server) SetupRoutes() {
 			r.Get("/files", s.FilesGet)
 			r.Post("/delete", s.FileDelete)
 		})
-		r.Get("/404", s.E400)
+		r.Get("/400", s.E400)
 		r.Get("/404", s.E404)
 		r.Get("/500", s.E500)
 		r.NotFound(func(w http.ResponseWriter, req *http.Request) {

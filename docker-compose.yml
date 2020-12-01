@@ -1,11 +1,14 @@
-version: '3'
+version: '3.5'
 services:
-  fserv:
+  db:
     restart: always
-    image: postgres
+    image: postgres:13-alpine
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_DB=fserv
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/1-init.sql:Z
+      - ./update-v_0.1.sql:/docker-entrypoint-initdb.d/2-update.sql:Z
