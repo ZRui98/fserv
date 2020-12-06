@@ -11,11 +11,30 @@
 				<div class="file">
 					<a class="filename"href="/v/{{ .UrlId }}">{{ .FileName }}</a>
 					<form method="post" action="/delete" class="inline">
-						<button type="submit" name="fileId" value="{{ .UrlId }}" class="delete">
-						&#91;x&#93;
-					  </button>
+						<button type="submit" name="fileId" value="{{ .UrlId }}" class="link-button hover-red hover-button">
+							&#91;x&#93;
+						</button>
+						<a type="button" class="link-button hover-red hover-button" href="#popup-{{ .UrlId }}">&#91;Edit&#93;</a>
 					</form>
 				</div>
+				<div id="popup-{{ .UrlId }}" class="overlay">
+					<div class="popup">
+						<h2>{{ .FileName }}</h2>
+						<a class="close hover-red" href="#">&#91;x&#93;</a>
+						<form method="post" action="/update">
+							<div class="section" id="private">
+								Private? 
+								<input type="radio" id="yes" name="private" value="true" {{ if .IsPrivate }}checked{{end}}>
+								<label for="yes">Yes</label>
+								<input type="radio" id="no" name="private" value="false" {{ if not .IsPrivate }}checked{{end}}>
+								<label for="no">No</label>
+							</div>
+							<button class="link-button hover-red" type="submit" name="fileId" value="{{ .UrlId }}">
+								&#91;Update&#93;
+							</button>
+						</form>
+					</div>
+				 </div>
 				{{ end }}
 			</div>
 		</div>
