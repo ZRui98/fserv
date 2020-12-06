@@ -17,6 +17,7 @@ type FileRepository interface {
 	AddFile(context.Context, *File) error
 	GetFilesForUser(context.Context, string) ([]File, error)
 	DeleteFileById(context.Context, string) error
+	UpdateFile(context.Context, *File) error
 }
 
 func (pool *DbPool) GetFileById(ctx context.Context, urlId string) (user *File, err error) {
@@ -38,13 +39,19 @@ func (pool *DbPool) AddFile(ctx context.Context, file *File) (err error) {
 	return err
 }
 
+func (pool *DbPool) UpdateFile(ctx context.Context, file *File) (err error) {
+	queryString := `UPDATE "files" SET "is_private"=$1 WHERE "url_id"=$2;`
+	_, err = pool.db.Exec(ctx, queryString, file.IsPrivate, file.UrlId)
+	return err
+}
+
 func (pool *DbPool) GetFilesForUser(ctx context.Context, username string) (files []File, err error) {
-	queryString := `SELECT "url_id", "file_path", "file_name", "owner" FROM "files" WHERE "owner"=$1;`
+	queryString := `SELECT "url_id", "file_path", "file_name", "owner", "is_private" FROM "files" WHERE "owner"=$1;`
 	var res []File
 	rows, err := pool.db.Query(ctx, queryString, username)
 	for rows.Next() {
 		f := File{}
-		rows.Scan(&f.UrlId, &f.FilePath, &f.FileName, &f.Owner)
+		rows.Scan(&f.UrlId, &f.FilePath, &f.FileName, &f.Owner, &f.IsPrivate)
 		res = append(res, f)
 	}
 	return res, err

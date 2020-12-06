@@ -44,6 +44,7 @@ func (s *Server) SetupRoutes() {
 			r.Post("/upload", s.UploadPost)
 			r.Get("/files", s.FilesGet)
 			r.Post("/delete", s.FileDelete)
+			r.Post("/update", s.FileUpdate)
 		})
 		r.Get("/400", s.E400)
 		r.Get("/404", s.E404)
@@ -58,6 +59,7 @@ func (s *Server) SetupRoutes() {
 }
 
 func (server *Server) ListenAndServe() {
+	glog.Info("Server started on PORT 2446")
 	glog.Fatal(http.ListenAndServe(":2446", server.router))
 }
 

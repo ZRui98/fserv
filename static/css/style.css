@@ -41,7 +41,6 @@ a{
     transition:.2s
 }
 a:hover{
-    color:var(--main-red-color);
     top:100%
 }
 .green{
@@ -54,6 +53,9 @@ a:hover{
 }
 .red{
 	color:var(--main-red-color);
+}
+.hover-red:hover{
+	color:var(--main-red-color)!important;
 }
 .orange{
 	color:var(--main-orange-color);
