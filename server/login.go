@@ -27,7 +27,7 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 	user, err := s.users.GetUserById(r.Context(), username)
 	if err != nil {
 		glog.Errorf("Querying DB failed:: %v\n", err)
-		renderPage(w, "templates/login.html", LoginErrors{
+		s.renderPage(w, "login.html", LoginErrors{
 			Password: "Invalid Password",
 		})
 		return
@@ -36,14 +36,14 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 	match, err := argon2id.ComparePasswordAndHash(password, user.Password)
 	if err != nil {
 		glog.Errorf("Error validating password:: %v\n", err)
-		renderPage(w, "templates/login.html", LoginErrors{
+		s.renderPage(w, "login.html", LoginErrors{
 			Password: "Invalid Password",
 		})
 		return
 	}
 	if !match {
 		glog.Error("Password did not match")
-		renderPage(w, "templates/login.html", LoginErrors{
+		s.renderPage(w, "login.html", LoginErrors{
 			Password: "Invalid Password",
 		})
 		return
@@ -81,5 +81,5 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) LoginGet(w http.ResponseWriter, r *http.Request) {
-	renderPage(w, "templates/login.html", LoginErrors{})
+	s.renderPage(w, "login.html", LoginErrors{})
 }

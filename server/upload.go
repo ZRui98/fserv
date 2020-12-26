@@ -103,9 +103,9 @@ func (s *Server) UploadPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	io.Copy(f, uploadedFile)
-	renderPage(w, "templates/upload.html", nil)
+	s.renderPage(w, "upload.html", nil)
 }
 
 func (s *Server) UploadGet(w http.ResponseWriter, r *http.Request) {
-	renderPage(w, "templates/upload.html", nil)
+	s.renderPage(w, "upload.html", nil)
 }

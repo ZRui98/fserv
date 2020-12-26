@@ -33,6 +33,7 @@ html{
 .section a{
     padding-right:30px
 }
+
 a{
     color:var(--main-yellow-color);
     -o-transition:.2s;
@@ -40,18 +41,21 @@ a{
     -moz-transition:.2s;
     transition:.2s
 }
+
 a:hover{
     top:100%
 }
-.green{
+
+.green {
 	color:var(--main-green-color);
 }
-.error{
+
+.error {
 	background:var(--main-red-color);
 	color:var(--main-fg-color);
 	padding: 5px;
 }
-.red{
+.red {
 	color:var(--main-red-color);
 }
 .hover-red:hover{
