@@ -20,7 +20,7 @@ func (s *Server) FilesGet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		glog.Error("Connection to DB failed:: %v\n", err)
 	}
-	renderPage(w, "templates/files.html", &FilesData{
+	s.renderPage(w, "files.html", &FilesData{
 		UserFiles: files,
 	})
 }

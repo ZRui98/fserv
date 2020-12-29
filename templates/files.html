@@ -9,7 +9,13 @@
 			<div class="files">
 				{{ range .UserFiles }}
 				<div class="file">
-					<a class="filename"href="/v/{{ .UrlId }}">{{ .FileName }}</a>
+					<a class="filename"href="/v/{{ .UrlId }}">
+						{{ $flen := len .FileName }} {{ if gt $flen 22 }}
+							{{ $mid := sub $flen 10 }}{{ slice .FileName 0 9 }}...{{ slice .FileName $mid }}
+						{{ else }}
+							{{ .FileName }}
+						{{ end }}
+					</a>
 					<form method="post" action="/delete" class="inline">
 						<button type="submit" name="fileId" value="{{ .UrlId }}" class="link-button hover-red hover-button">
 							&#91;x&#93;

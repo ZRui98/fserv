@@ -20,7 +20,7 @@ func CreatePool(dbUrl string) *DbPool {
 	}
 	pool, err := pgxpool.ConnectConfig(context.Background(), poolConfig)
 	if err != nil {
-		glog.Fatalf("Unable to connect to database:: %v\n", err)
+		glog.Fatalf("Unable to connect to database (make sure db is up and env.sh is correct):: %v\n", err)
 		os.Exit(1)
 	}
 	dbPool := &DbPool{pool}

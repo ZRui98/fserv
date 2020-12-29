@@ -3,19 +3,22 @@ package server
 import (
 	"html/template"
 	"net/http"
-
-	"github.com/zrui98/fserv/config"
-	"github.com/zrui98/fserv/models"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/golang/glog"
+	"github.com/zrui98/fserv/config"
+	"github.com/zrui98/fserv/models"
 )
 
 type Server struct {
-	router chi.Router
-	Config *config.Config
-	users  models.UserRepository
-	files  models.FileRepository
+	router    chi.Router
+	Config    *config.Config
+	users     models.UserRepository
+	files     models.FileRepository
+	templates map[string]*template.Template
 }
 
 func New(c *config.Config) *Server {
@@ -28,11 +31,7 @@ func New(c *config.Config) *Server {
 func (s *Server) SetupRoutes() {
 	s.router.Group(func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, req *http.Request) {
-			t, err := template.ParseFiles("templates/index.html", "templates/head.tmpl", "templates/navbar.tmpl")
-			if err != nil {
-				glog.Errorf("Something went wrong parsing template :: %v\n", err)
-			}
-			t.Execute(w, nil)
+			s.renderPage(w, "index.html", nil)
 		})
 		r.Get("/login", s.LoginGet)
 		r.Post("/login", s.LoginPost)
@@ -63,7 +62,28 @@ func (server *Server) ListenAndServe() {
 	glog.Fatal(http.ListenAndServe(":2446", server.router))
 }
 
-func renderPage(w http.ResponseWriter, templateName string, v interface{}) {
-	t, _ := template.ParseFiles(templateName, "templates/head.tmpl", "templates/navbar.tmpl")
-	t.Execute(w, &v)
+func (server *Server) ParseTemplates() {
+	server.templates = make(map[string]*template.Template)
+	err := filepath.Walk("./templates", func(path string, info os.FileInfo, err error) error {
+		if strings.Contains(path, ".html") {
+			name := info.Name()
+			templ := template.Must(template.New(name).Funcs(templateFunctions).ParseFiles("templates/"+name, "templates/head.tmpl", "templates/navbar.tmpl"))
+			server.templates[name] = templ
+			if err != nil {
+				glog.Errorf("Error parsing file: %v\n", err)
+			}
+		}
+		return err
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (server *Server) renderPage(w http.ResponseWriter, templateName string, v interface{}) {
+	if t, ok := server.templates[templateName]; ok {
+		t.Execute(w, &v)
+	} else {
+		glog.Errorf("Template named %s not found!\n", templateName)
+	}
 }

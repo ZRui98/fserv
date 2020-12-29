@@ -28,7 +28,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	username := r.PostFormValue("username")
 	if len(username) < 3 {
 		glog.Errorf("Username Too Short!")
-		renderPage(w, "templates/register.html", &RegistrationErrors{
+		s.renderPage(w, "register.html", &RegistrationErrors{
 			Username: "Username too short",
 		})
 		return
@@ -36,7 +36,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	userExists, _ := s.users.GetUserById(r.Context(), username)
 	if len(userExists.Username) > 0 {
 		glog.Errorf("Failed to claim unique username:: %v\n", userExists.Username)
-		renderPage(w, "templates/register.html", &RegistrationErrors{
+		s.renderPage(w, "register.html", &RegistrationErrors{
 			Username: "Invalid Username (taken or bad form)",
 		})
 		return
@@ -45,7 +45,7 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 	registration_key := r.PostFormValue("key")
 	if registration_key != s.Config.REGISTRATION_KEY {
 		glog.Error("Wrong Registration Key")
-		renderPage(w, "templates/register.html", &RegistrationErrors{
+		s.renderPage(w, "register.html", &RegistrationErrors{
 			RegistrationKey: "Invalid Registration Key",
 		})
 		return
@@ -88,5 +88,5 @@ func (s *Server) RegisterPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RegisterGet(w http.ResponseWriter, r *http.Request) {
-	renderPage(w, "templates/register.html", &RegistrationErrors{})
+	s.renderPage(w, "register.html", &RegistrationErrors{})
 }
