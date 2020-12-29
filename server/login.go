@@ -74,7 +74,7 @@ func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 		Expires:  expirationTime,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
