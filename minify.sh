@@ -6,7 +6,7 @@ done < <(find $1 -name "*.css" -print0)
 
 for file in "${CSS_FILES[@]}"; do
     MINIFIED=$(cat $file \
-        | sed -r ':a; s%(.*)/\*.*\*/%\1%; ta; /\/\*/ !b; N; ba' \
-        | tr -d '\t' | tr -d ' ' | tr -d '\n' | tr -s ' ' ' ')
+        | tr -d '\t' | tr -d '\n' | tr -s ' ' ' ' \
+        | sed -r -e 's/([;:{]) ([a-z-])/\1\2/g')
     echo $MINIFIED > $file
 done
