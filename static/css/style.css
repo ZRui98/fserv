@@ -17,13 +17,17 @@ html{
     font-size:16px
 }
 .section{
-    padding-top:80px;
+    padding-top:100px;
 	display:flex;
 	justify-content:center;
 	align-items:center;
     color:var(--main-fg-color);
     background-color:var(--main-bg-color);
 	text-align:center;
+}
+
+.column{
+    flex-direction: column;
 }
 
 .section pre{
@@ -126,4 +130,3 @@ button{
     padding:6px 13px 3px 13px;
     font-size:20px
 }
-

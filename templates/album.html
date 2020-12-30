@@ -1,3 +1,15 @@
 <html>
-	<p>album</p>
+    {{ template "head" . }}
+    <body>
+		<head>
+			<link href="/static/css/album.css" rel="stylesheet"> 
+		</head>
+		{{ template "navbar" . }}
+		<div class="section column">
+			<div class="title orange">{{ .FileName }}</div>
+			<pre class="dark-area green">
+ {{ .TextContents }}
+			</pre>
+		</div>
+	</body>
 </html>

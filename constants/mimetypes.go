@@ -14,3 +14,10 @@ var Video = []string{
 	"video/x-msvideo",
 	"video/x-ms-wmv",
 }
+
+var Text = []string{
+	"text/plain",
+	"application/javascript",
+	"application/json",
+	"application/x-python",
+}

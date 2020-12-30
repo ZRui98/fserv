@@ -10,8 +10,8 @@ go build
 ## Todo:
 - [x] File viewing  
 - [x] Private files
-- [ ] Edit file properties after upload
-- [ ] View txt files without download
+- [x] Edit file properties after upload
+- [x] View txt files without download
 - [ ] Albums/grouping of files  
 - [ ] User Roles  
 - [ ] Admin panel  

@@ -1,0 +1,9 @@
+.dark-area {
+    background-color: #1d2021;
+    padding: 50px;
+}
+
+.section .title {
+    font-size: 20px;
+    text-decoration: underline;
+}

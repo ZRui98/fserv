@@ -1,11 +1,19 @@
 package server
 
 import (
+	"io/ioutil"
 	"net/http"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/go-chi/chi"
 	"github.com/golang/glog"
+	"github.com/zrui98/fserv/constants"
 )
+
+type TextData struct {
+	TextContents string
+	FileName     string
+}
 
 func (server *Server) ViewFile(w http.ResponseWriter, r *http.Request) {
 	url_id := chi.URLParam(r, "fileId")
@@ -30,5 +38,21 @@ func (server *Server) ViewFile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	http.ServeFile(w, r, file.FilePath)
+	mime, err := mimetype.DetectFile(file.FilePath)
+	if err != nil {
+		glog.Errorf("Error unrecognized mimetype:: %v\n", err)
+		return
+	}
+	if mimetype.EqualsAny(mime.String(), constants.Image...) || mimetype.EqualsAny(mime.String(), constants.Video...) {
+		http.ServeFile(w, r, file.FilePath)
+	} else {
+		rawcontent, err := ioutil.ReadFile(file.FilePath)
+		if err != nil {
+			glog.Errorf("Error getting text file contents for file %s", file.FilePath)
+		}
+		server.renderPage(w, "album.html", &TextData{
+			TextContents: string(rawcontent),
+			FileName:     file.FileName,
+		})
+	}
 }

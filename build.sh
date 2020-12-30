@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-rm -rf target
+rm -rf ./target/fserv ./target/templates ./target/static
 go build
-mkdir target
+mkdir -p target
 mv ./fserv ./target
 cp -r ./env.sh ./templates ./static ./target
 bash ./minify.sh ./target/static/css
