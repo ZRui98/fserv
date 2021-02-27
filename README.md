@@ -12,6 +12,8 @@ go build
 - [x] Private files
 - [x] Edit file properties after upload
 - [x] View txt files without download
+- [ ] Resumable multipart uplaods
+- [ ] Implement refresh tokens
 - [ ] Albums/grouping of files  
 - [ ] User Roles  
 - [ ] Admin panel  
