@@ -13,6 +13,7 @@ import (
 	"github.com/zrui98/fserv/models"
 )
 
+// Server struct
 type Server struct {
 	router    chi.Router
 	Config    *config.Config
@@ -21,14 +22,17 @@ type Server struct {
 	templates map[string]*template.Template
 }
 
+// New creates new Server
 func New(c *config.Config) *Server {
 	r := chi.NewRouter()
 	pool := models.CreatePool(c.DB_URL) // use same pool, with different interfaces
 	s := &Server{router: r, Config: c, users: pool, files: pool}
+	s.setupRoutes()
+	s.parseTemplates()
 	return s
 }
 
-func (s *Server) SetupRoutes() {
+func (s *Server) setupRoutes() {
 	s.router.Group(func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, req *http.Request) {
 			s.renderPage(w, "index.html", nil)
@@ -54,21 +58,26 @@ func (s *Server) SetupRoutes() {
 		r.Get("/v/{fileId}", s.ViewFile)
 		fs := http.FileServer(http.Dir("./static/"))
 		r.Handle("/static/*", http.StripPrefix("/static/", fs))
+		r.Route("/api", func(r chi.Router) {
+			r.Post("/login", s.LoginPostAPI)
+			r.Group(func(r chi.Router) {
+				r.Use(s.ValidateJwtAPI)
+				r.Post("/upload", s.UploadPostAPI)
+				r.Post("/delete", s.FileDeleteAPI)
+				r.Get("/files", s.FilesGetAPI)
+				r.Post("/update", s.FileUpdateAPI)
+			})
+		})
 	})
 }
 
-func (server *Server) ListenAndServe() {
-	glog.Info("Server started on PORT 2446")
-	glog.Fatal(http.ListenAndServe(":2446", server.router))
-}
-
-func (server *Server) ParseTemplates() {
-	server.templates = make(map[string]*template.Template)
+func (s *Server) parseTemplates() {
+	s.templates = make(map[string]*template.Template)
 	err := filepath.Walk("./templates", func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(path, ".html") {
 			name := info.Name()
 			templ := template.Must(template.New(name).Funcs(templateFunctions).ParseFiles("templates/"+name, "templates/head.tmpl", "templates/navbar.tmpl"))
-			server.templates[name] = templ
+			s.templates[name] = templ
 			if err != nil {
 				glog.Errorf("Error parsing file: %v\n", err)
 			}
@@ -80,10 +89,16 @@ func (server *Server) ParseTemplates() {
 	}
 }
 
-func (server *Server) renderPage(w http.ResponseWriter, templateName string, v interface{}) {
-	if t, ok := server.templates[templateName]; ok {
+func (s *Server) renderPage(w http.ResponseWriter, templateName string, v interface{}) {
+	if t, ok := s.templates[templateName]; ok {
 		t.Execute(w, &v)
 	} else {
 		glog.Errorf("Template named %s not found!\n", templateName)
 	}
+}
+
+// ListenAndServe starts Server struct
+func (s *Server) ListenAndServe() {
+	glog.Info("Server started on PORT 2446")
+	glog.Fatal(http.ListenAndServe(":2446", s.router))
 }

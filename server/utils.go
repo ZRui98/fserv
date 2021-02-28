@@ -11,16 +11,17 @@ import (
 	"github.com/golang/glog"
 )
 
+// Claims struct containing username and jwt claims
 type Claims struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
-type ContextKey string
+type contextKey string
 
-var UsernameKey ContextKey = "usernameKey"
+var usernameKey contextKey = "usernameKey"
 
-func (s *Server) GetValidJWTUsername(c *http.Cookie, ctx context.Context) string {
+func (s *Server) getValidJWTUsername(ctx context.Context, c *http.Cookie) string {
 	tknStr := c.Value
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {

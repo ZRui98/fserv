@@ -19,10 +19,9 @@ func init() {
 	flag.Set("v", "2")
 	flag.Parse()
 }
+
 func main() {
 	c := config.LoadConfig()
 	s := server.New(c)
-	s.ParseTemplates()
-	s.SetupRoutes()
 	s.ListenAndServe()
 }

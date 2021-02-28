@@ -14,6 +14,7 @@ go build
 - [x] View txt files without download
 - [ ] Resumable multipart uplaods
 - [ ] Implement refresh tokens
+- [ ] Upload multiple files at the same time: async/goroutine
 - [ ] Albums/grouping of files  
 - [ ] User Roles  
 - [ ] Admin panel  
